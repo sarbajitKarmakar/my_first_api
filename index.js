@@ -70,6 +70,24 @@ app.put("/put/:id", (req, res) => {
 //6. PATCH a joke
 
 //7. DELETE Specific joke
+app.delete("/delete/:id", (req,res) =>{
+    const id = parseInt(req.params.id);
+    let i = 0;
+    let tf = false;
+    while (i < jokes.length) {
+        if (jokes[i].id === id) {
+            tf = true
+            break;
+        }
+        i++;
+    }
+    if (tf) {
+        jokes.splice(i,1);
+        res.send("DELETED");
+    }else{
+        res.send("No item found");
+    }
+})
 
 //8. DELETE All jokes
 
