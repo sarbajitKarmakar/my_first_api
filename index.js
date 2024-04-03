@@ -14,11 +14,44 @@ app.get("/random", (req,res) =>{
   res.json(jokes[rand]);
 })
 
-//2. GET a specific joke
+//2. GET a specific jokex
+
+app.get("/jokes/:id", (req,res) =>{
+  const id = parseInt(req.params.id);
+  let i = 0;
+  while ( i < jokes.length) {
+    if (jokes[i].id === id) {
+      break;
+    }
+    i++;
+  }
+  res.json(jokes[i]);
+})
 
 //3. GET a jokes by filtering on the joke type
+app.get("/filter", (req,res) =>{
+  const type = req.query.type;
+  let i = 0;
+  while ( i < jokes.length) {
+    if (jokes[i].jokeType === type) {
+      break;
+    }
+    i++;
+  }
+  res.json(jokes[i]);
+})
 
 //4. POST a new joke
+app.post("/post", (req,res) =>{
+  const id = jokes.length
+ const joke = {
+  id : jokes.length+1,
+  jokeText: req.body.joke,
+  jokeType: req.body.type,
+ }
+ jokes.push(joke);
+ res.json(jokes[id]);
+})
 
 //5. PUT a joke
 
@@ -31,6 +64,7 @@ app.get("/random", (req,res) =>{
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
 });
+
 
 var jokes = [
   {
