@@ -18,6 +18,9 @@ app.get("/random", (req, res) => {
 
 app.get("/jokes/:id", (req, res) => {
     const id = parseInt(req.params.id);
+    if (id >= jokes.length) {
+        res.send("No JOKES FOUND");
+    }else{
     let i = 0;
     while (i < jokes.length) {
         if (jokes[i].id === id) {
@@ -26,27 +29,29 @@ app.get("/jokes/:id", (req, res) => {
         i++;
     }
     res.json(jokes[i]);
+}
 })
 
 //3. GET a jokes by filtering on the joke type
 app.get("/filter", (req, res) => {
     const type = req.query.type;
+    let filterJokes = [];
     let i = 0;
     while (i < jokes.length) {
         if (jokes[i].jokeType === type) {
-            break;
+            filterJokes.push(jokes[i]);
         }
         i++;
     }
-    res.json(jokes[i]);
+    res.json(filterJokes);
 })
 
 //4. POST a new joke
-app.post("/post", (req, res) => {
+app.post("/jokes", (req, res) => {
     const id = jokes.length
     const joke = {
         id: jokes.length + 1,
-        jokeText: req.body.joke,
+        jokeText: req.body.text,
         jokeType: req.body.type,
     }
     jokes.push(joke);
@@ -54,24 +59,55 @@ app.post("/post", (req, res) => {
 })
 
 //5. PUT a joke
-app.put("/put/:id", (req, res) => {
+app.put("/jokes/:id", (req, res) => {
+    const id = parseInt(req.params.id)
+    if (id >= jokes.length) {
+        res.send("NO JOKES FOUND");
+    } else {
+        let i = 0;
+        while (i < jokes.length) {
+            if (jokes[i].id === id) {
+                break;
+            }
+            i++;
+        }
+        jokes[i].jokeText = req.body.text;
+        jokes[i].jokeType = req.body.type;
+        res.json(jokes[i]);
+    }
+})
+
+//6. PATCH a joke
+app.patch("/jokes/:id", (req,res) =>{
     const id = parseInt(req.params.id)
     let i = 0;
+    if (id >= jokes.length) {
+        res.send("NO JOKES FOUND");
+    }else{
+
     while (i < jokes.length) {
         if (jokes[i].id === id) {
             break;
         }
         i++;
     }
-    jokes[i].jokeText = req.body.joke;
-    jokes[i].jokeType = req.body.type;
-    res.json(jokes[i]);
+    const newJoke = {
+        id: id,
+        jokeText : req.body.text || jokes[i].jokeText,
+        jokeType : req.body.type || jokes[i].jokeType,
+    }
+    jokes[i] = newJoke;
+    res.json(newJoke)
+}
 })
-//6. PATCH a joke
 
 //7. DELETE Specific joke
-app.delete("/delete/:id", (req,res) =>{
+app.delete("/jokes/:id", (req,res) =>{
     const id = parseInt(req.params.id);
+    if (id >= jokes.length) {
+        res.send("NO JOKES FOUND|")
+    } else {
+        
     let i = 0;
     let tf = false;
     while (i < jokes.length) {
@@ -87,9 +123,14 @@ app.delete("/delete/:id", (req,res) =>{
     }else{
         res.send("No item found");
     }
+}
 })
 
 //8. DELETE All jokes
+app.delete("/all", (req,res) =>{
+    jokes = [];
+    res.json(jokes);
+})
 
 app.listen(port, () => {
     console.log(`Successfully started server on port ${port}.`);
